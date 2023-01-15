@@ -6,6 +6,7 @@ const gameSchema = new Schema(
     thread_id: {
       type: String,
       require: true,
+      unique: true,
     },
     guild_id: {
       type: String,
@@ -27,6 +28,10 @@ const gameSchema = new Schema(
       type: Number,
       default: 1,
     },
+    is_day: {
+      type: Boolean,
+      default: false,
+    },
     players: {
       type: [Types.ObjectId],
       ref: "Player",
@@ -46,6 +51,10 @@ const gameSchema = new Schema(
     },
     witch_heal: String,
     witch_poison: String,
+    used_holy_water: Boolean,
+    cupid_pair: {
+      type: [String],
+    },
   },
   { timestamps: true }
 );

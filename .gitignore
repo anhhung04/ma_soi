@@ -1,6 +1,6 @@
 .history/
 .vscode/
-
+test/
 # Logs
 logs
 *.log

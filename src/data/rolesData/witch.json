@@ -1,6 +1,6 @@
 {
     "name": "Phù thủy",
     "party": 1,
-    "index": 20,
+    "index": 5,
     "description": "The Witch has two potions called elixir and poison. Each can be used only once. The elixir potion protects any player that gets hit by the werewolves or Solo Killers (excluding Arsonist & Bomber). If they are not attacked the elixir is not used. Meanwhile, the poison potion can kill any player at night except for on the first night."
 }

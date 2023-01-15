@@ -45,10 +45,6 @@ mongoose
     console.log(`Connected to database! ${urlDB}`);
   })
   .catch((err) => console.log(err));
-client.login(TOKEN).then(function () {
-  const deploySlashCommand = require("./deploy-slash-command.js");
-  const guildTestId = "1007596460918984755";
-  deploySlashCommand(guildTestId);
-});
+client.login(TOKEN).catch((err) => console.log(err));
 
 module.exports = client;

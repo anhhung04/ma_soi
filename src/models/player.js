@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
-const { rolesMap } = require("../data/rolesData/role.js");
-const role = require("../data/rolesData/role.js");
 const Game = require("./game.js");
+const { rolesMap } = require("../data/rolesData/role.js");
 class Role extends mongoose.SchemaType {
   constructor(key, options) {
     super(key, options, "Role");

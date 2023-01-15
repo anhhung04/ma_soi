@@ -1,0 +1,6 @@
+{
+    "name": "Thầy đồng",
+    "index": 999,
+    "party": 1,
+    "description": "Once per game, the Priest can throw Holy Water at one player. The Priest can only do this during the day. If the water is thrown at a Werewolf (excluding Sorcerer), the Werewolf will die, and the role of the priest will be revealed. If that player is not a Werewolf, the Priest dies.\n    The Priest cannot kill Solo Killers."
+}

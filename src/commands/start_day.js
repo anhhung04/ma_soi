@@ -32,7 +32,9 @@ module.exports = {
           ),
         ],
       });
+      game.is_day = true;
       game.kills_in_night = [];
+      game.used_holy_water = false;
       await game.save();
       endGame = await checkWinCondition(message.channel);
       if (!endGame) await startDay(message.channel);

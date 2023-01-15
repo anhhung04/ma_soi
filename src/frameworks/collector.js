@@ -62,14 +62,9 @@ module.exports = {
         .setOptions(alivePlayersOptions)
         .setMaxValues(1)
         .setPlaceholder(stringSelectPlaceHolder);
-      await gameThread.send({
-        embeds: [
-          {
-            title: `Bắt đầu lượt của ${turnName} (${time} giây)`,
-            color: embedColor,
-          },
-        ],
-      });
+
+      await this.startTurn(gameThread, turnName, time);
+
       const mess = await gameThread.send({
         embeds: [alivePlayerEmbed],
         components: [new ActionRowBuilder().addComponents(selectPlayerMenu)],
@@ -85,16 +80,42 @@ module.exports = {
 
       await wait(time * 1000);
 
-      await gameThread.send({
-        embeds: [
-          {
-            title: `Kết thúc lượt của ${turnName}`,
-            color: embedColor,
-          },
-        ],
-      });
+      await this.endTurn(gameThread, turnName);
     } catch (err) {
       console.log(err);
     }
+  },
+  /**
+   *
+   * @param {ThreadChannel} gameThread
+   * @param {String} turnName
+   * @param {Number} time
+   * @returns
+   */
+  async startTurn(gameThread, turnName, time) {
+    return gameThread.send({
+      embeds: [
+        {
+          title: `Bắt đầu lượt của ${turnName} (${time} giây)`,
+          color: embedColor,
+        },
+      ],
+    });
+  },
+  /**
+   *
+   * @param {ThreadChannel} gameThread
+   * @param {String} turnName
+   * @returns
+   */
+  async endTurn(gameThread, turnName) {
+    return gameThread.send({
+      embeds: [
+        {
+          title: `Kết thúc lượt của ${turnName}`,
+          color: embedColor,
+        },
+      ],
+    });
   },
 };
