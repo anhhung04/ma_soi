@@ -1,5 +1,4 @@
 const { Schema, Types, model } = require("mongoose");
-const Player = require("./player");
 
 const gameSchema = new Schema(
   {
@@ -60,10 +59,11 @@ const gameSchema = new Schema(
 );
 
 gameSchema.statics.end = async function (thread_id) {
+  const Player = require("./player");
   const gameDB = await this.findOne({
     thread_id: thread_id,
   });
-  await Game.deleteById(gameDB._id);
+  await this.deleteById(gameDB._id);
   await Player.deleteMany({ game_id: gameDB._id });
   return;
 };

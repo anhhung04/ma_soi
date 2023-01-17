@@ -29,7 +29,6 @@ module.exports = {
   async startNight(channel) {
     try {
       const gameDB = await Game.findOne({
-        guild_id: channel.guildId,
         thread_id: channel.id,
       });
       const roles_in_game = [...new Set(gameDB.roles_in_game)].sort((a, b) => {
@@ -117,16 +116,25 @@ module.exports = {
   async checkWinCondition(gameChannel) {
     try {
       const winLoseEmbed = new EmbedBuilder().setTimestamp();
-      let endGame = false;
+      let endGame = true;
       const alivePlayers = await Game.getAlivePlayers(gameChannel.id);
+      const game = await Game.findOne({ thread_id: gameChannel.id });
       const villagers = alivePlayers.filter((p) => rolesMap.get(p.role).party);
-      if (alivePlayers.length >= 2 * villagers.length) {
+      if (alivePlayers.length == 2 && game.cupid_pair.length == 2) {
+        let playerOne = await gameChannel.guild.members.fetch(
+          game.cupid_pair[0]
+        );
+        let playerTwo = await gameChannel.guild.members.fetch(
+          game.cupid_pair[1]
+        );
+        winLoseEmbed.setTitle(
+          `Cặp đôi ${playerOne.displayName} và ${playerTwo.displayName} đã chiến thắng.`
+        );
+      } else if (alivePlayers.length >= 2 * villagers.length) {
         winLoseEmbed.setTitle("Phe sói thắng").setColor(Colors.Red);
-        endGame = true;
       } else if (alivePlayers.length == villagers.length) {
         winLoseEmbed.setTitle("Phe dân làng thắng").setColor(Colors.Green);
-        endGame = true;
-      }
+      } else endGame = false;
       if (endGame) {
         await Game.end(gameChannel.id);
         await gameChannel.send({

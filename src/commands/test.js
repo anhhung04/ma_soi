@@ -9,11 +9,10 @@ const { Model } = require("mongoose");
 const { EmbedBuilder, Colors, AttachmentBuilder } = require("discord.js");
 const wait = require("wait");
 const { rolesMap } = require("../data/rolesData/role");
-/**
- * @type {Model}
- */
 const Player = require("../models/player");
-const { nightExecute } = require("../rolesController/seer");
+const Game = require("../models/game");
+const roleTest = "cupid";
+const { nightExecute } = require("../rolesController/" + roleTest + ".js");
 
 module.exports = {
   name: "test",
@@ -25,7 +24,7 @@ module.exports = {
    */
   async execute(message, arg) {
     try {
-      await nightExecute(message.channel);
+      await Player.kill("716298891586174977");
     } catch (err) {
       console.log(err);
     }

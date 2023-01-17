@@ -9,7 +9,41 @@ const {
 } = require("discord.js");
 const wait = require("wait");
 const Game = require("../models/game");
-
+/**
+ *
+ * @param {ThreadChannel} gameThread
+ * @param {String} turnName
+ * @param {Number} time
+ * @param {Colors} embedColor
+ * @returns
+ */
+async function startTurn(gameThread, turnName, time, embedColor) {
+  return gameThread.send({
+    embeds: [
+      {
+        title: `Bắt đầu lượt của ${turnName} (${time} giây)`,
+        color: embedColor,
+      },
+    ],
+  });
+}
+/**
+ *
+ * @param {ThreadChannel} gameThread
+ * @param {String} turnName
+ * @param {Colors} embedColor
+ * @returns
+ */
+async function endTurn(gameThread, turnName, embedColor) {
+  return gameThread.send({
+    embeds: [
+      {
+        title: `Kết thúc lượt của ${turnName}`,
+        color: embedColor,
+      },
+    ],
+  });
+}
 module.exports = {
   /**
    *
@@ -22,6 +56,7 @@ module.exports = {
    * @param {Function} endCallback
    * @param {Number} time
    * @param {String} turnName
+   * @param {Number} maxSelect
    */
   async nightFunctionCollector(
     gameThread,
@@ -32,7 +67,8 @@ module.exports = {
     collectCallback,
     endCallback,
     time,
-    turnName
+    turnName,
+    maxSelect = 1
   ) {
     try {
       const alivePlayers = await Game.getAlivePlayers(gameThread.id);
@@ -60,10 +96,10 @@ module.exports = {
       const selectPlayerMenu = new StringSelectMenuBuilder()
         .setCustomId(menuId)
         .setOptions(alivePlayersOptions)
-        .setMaxValues(1)
+        .setMaxValues(maxSelect)
         .setPlaceholder(stringSelectPlaceHolder);
 
-      await this.startTurn(gameThread, turnName, time);
+      await startTurn(gameThread, turnName, time, embedColor);
 
       const mess = await gameThread.send({
         embeds: [alivePlayerEmbed],
@@ -76,46 +112,15 @@ module.exports = {
       });
 
       collector.on("collect", collectCallback);
-      collector.once("end", endCallback);
+      if (endCallback) collector.once("end", endCallback);
 
       await wait(time * 1000);
 
-      await this.endTurn(gameThread, turnName);
+      await endTurn(gameThread, turnName, embedColor);
     } catch (err) {
       console.log(err);
     }
   },
-  /**
-   *
-   * @param {ThreadChannel} gameThread
-   * @param {String} turnName
-   * @param {Number} time
-   * @returns
-   */
-  async startTurn(gameThread, turnName, time) {
-    return gameThread.send({
-      embeds: [
-        {
-          title: `Bắt đầu lượt của ${turnName} (${time} giây)`,
-          color: embedColor,
-        },
-      ],
-    });
-  },
-  /**
-   *
-   * @param {ThreadChannel} gameThread
-   * @param {String} turnName
-   * @returns
-   */
-  async endTurn(gameThread, turnName) {
-    return gameThread.send({
-      embeds: [
-        {
-          title: `Kết thúc lượt của ${turnName}`,
-          color: embedColor,
-        },
-      ],
-    });
-  },
+  startTurn,
+  endTurn,
 };

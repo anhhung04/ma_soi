@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
-const Game = require("./game.js");
-const { rolesMap } = require("../data/rolesData/role.js");
+const { rolesMap } = require("../data/rolesData/role");
 class Role extends mongoose.SchemaType {
   constructor(key, options) {
     super(key, options, "Role");
@@ -43,17 +42,28 @@ playerSchema.statics.kill = async function (
   discord_id,
   dieReason = "werewolf"
 ) {
-  let diePlayer = await this.findOne({ discord_id: discord_id });
-  if (rolesMap.get(diePlayer.role).executeFunctionAfterVote) {
+  const Game = require("./game");
+  let diePlayerIndexInCupidPair;
+  let diePlayer = await this.findOne({ discord_id });
+  if (!diePlayer) throw new Error("Can not find player to kill");
+  let game = await Game.findById(diePlayer.game_id);
+  if (rolesMap.get(diePlayer.role).executeAfterDied) {
     let roleController = require(`../rolesController/${diePlayer.role}.js`);
     if (typeof roleController.executeAfterVote == "function")
-      await roleController.executeAfterVote(discord_id);
+      await roleController.executeAfterDied(discord_id);
   }
   diePlayer.alive = false;
   diePlayer.die_reason = dieReason;
-  await Game.findByIdAndUpdate(diePlayer.game_id, {
-    last_kill: diePlayer._id,
-  });
+  diePlayerIndexInCupidPair = game.cupid_pair.indexOf(discord_id);
+
+  if (diePlayerIndexInCupidPair >= 0) {
+    let partnerIndex = 1 - diePlayerIndexInCupidPair; // index only accept 2 values: 0 and 1
+    let partnerId = game.cupid_pair[partnerIndex];
+    game.cupid_pair = [];
+    await game.save();
+    await this.kill(partnerId);
+  }
+  await game.save();
 
   return diePlayer.save();
 };
