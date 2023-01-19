@@ -42,14 +42,18 @@ playerSchema.statics.kill = async function (
   discord_id,
   dieReason = "werewolf"
 ) {
+  let diePlayerIndexInCupidPair, guild, gameThread, diePlayerDiscord;
+  const client = require("../index");
   const Game = require("./game");
-  let diePlayerIndexInCupidPair;
   let diePlayer = await this.findOne({ discord_id });
+  let game = await Game.findById(diePlayer?.game_id);
   if (!diePlayer) throw new Error("Can not find player to kill");
-  let game = await Game.findById(diePlayer.game_id);
+  guild = await client.guilds.fetch(game.guild_id);
+  gameThread = await guild.channels.fetch(game.thread_id);
+  diePlayerDiscord = await guild.members.fetch(discord_id);
   if (rolesMap.get(diePlayer.role).executeAfterDied) {
     let roleController = require(`../rolesController/${diePlayer.role}.js`);
-    if (typeof roleController.executeAfterVote == "function")
+    if (typeof roleController.executeAfterDied == "function")
       await roleController.executeAfterDied(discord_id);
   }
   diePlayer.alive = false;
@@ -64,6 +68,7 @@ playerSchema.statics.kill = async function (
     await this.kill(partnerId);
   }
   await game.save();
+  await gameThread.send(`${diePlayerDiscord.user} đã chết.`);
 
   return diePlayer.save();
 };

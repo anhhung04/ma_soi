@@ -1,0 +1,7 @@
+{
+    "name": "Thợ săn",
+    "party": 1,
+    "description": "If you get killed, you can take revenge on someone by shooting him just before you die.",
+    "index": 998,
+    "executeAfterDied": true
+}

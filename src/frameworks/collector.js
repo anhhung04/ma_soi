@@ -6,6 +6,7 @@ const {
   ActionRowBuilder,
   ComponentType,
   StringSelectMenuOptionBuilder,
+  GuildApplicationCommandManager,
 } = require("discord.js");
 const wait = require("wait");
 const Game = require("../models/game");
@@ -98,7 +99,11 @@ module.exports = {
         .setOptions(alivePlayersOptions)
         .setMaxValues(maxSelect)
         .setPlaceholder(stringSelectPlaceHolder);
-
+      if (!alivePlayers || alivePlayers.length == 0) {
+        await Game.end(gameThread.id);
+        await gameThread.send("Đã có lỗi xảy ra, vui lòng liên hệ admin.");
+        throw new Error("Alive players array is empty.");
+      }
       await startTurn(gameThread, turnName, time, embedColor);
 
       const mess = await gameThread.send({

@@ -13,6 +13,7 @@ const Player = require("../models/player");
 const Game = require("../models/game");
 const roleTest = "cupid";
 const { nightExecute } = require("../rolesController/" + roleTest + ".js");
+const { executeAfterDied } = require("../rolesController/hunter");
 
 module.exports = {
   name: "test",
@@ -24,7 +25,7 @@ module.exports = {
    */
   async execute(message, arg) {
     try {
-      await Player.kill("716298891586174977");
+      await executeAfterDied("716298891586174977");
     } catch (err) {
       console.log(err);
     }
